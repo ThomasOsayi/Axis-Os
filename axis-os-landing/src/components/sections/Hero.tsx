@@ -125,24 +125,10 @@ export function Hero() {
               as="a"
               href="#contact"
               strength={0.15}
-              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl overflow-hidden"
+              className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl flex items-center gap-2"
             >
-              {/* Shine effect on hover */}
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              <span className="relative flex items-center gap-2">
-                Start Your Growth Plan
-                <motion.span
-                  className="inline-block"
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </motion.span>
-              </span>
+              Start Your Growth Plan
+              <ArrowRight className="h-4 w-4" />
             </MagneticButton>
 
             <MagneticButton
@@ -150,17 +136,12 @@ export function Hero() {
               href="#process"
               strength={0.15}
               glow={false}
-              className="group px-8 py-4 border border-slate-700 text-slate-300 font-semibold rounded-xl hover:bg-slate-800/50 hover:border-slate-600 hover:text-white transition-all"
+              className="px-8 py-4 border border-slate-700 text-slate-300 font-semibold rounded-xl hover:bg-slate-800/50 hover:border-slate-600 hover:text-white transition-all flex items-center gap-2"
             >
-              <span className="flex items-center gap-2">
-                <motion.span
-                  className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-800 group-hover:bg-cyan-500/20 transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                >
-                  <Play className="h-3 w-3 text-cyan-400" fill="currentColor" />
-                </motion.span>
-                See How It Works
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-800">
+                <Play className="h-3 w-3 text-cyan-400" fill="currentColor" />
               </span>
+              See How It Works
             </MagneticButton>
           </div>
         </SectionReveal>
@@ -219,37 +200,6 @@ export function Hero() {
             </div>
           </motion.div>
         </SectionReveal>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.6 }}
-        >
-          <motion.div
-            className="flex flex-col items-center gap-2 text-slate-500"
-            animate={{ y: [0, 8, 0] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <span className="text-xs uppercase tracking-widest">Scroll</span>
-            <div className="w-5 h-8 border-2 border-slate-700 rounded-full flex justify-center pt-1.5">
-              <motion.div
-                className="w-1 h-2 bg-cyan-400 rounded-full"
-                animate={{ y: [0, 8, 0], opacity: [1, 0.5, 1] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </div>
-          </motion.div>
-        </motion.div>
       </div>
 
       {/* Bottom gradient fade */}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface MagneticButtonProps {
@@ -41,10 +41,6 @@ export function MagneticButton({
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
-  // Glow position (follows cursor more closely)
-  const glowX = useMotionValue(50);
-  const glowY = useMotionValue(50);
-
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current || disabled) return;
 
@@ -63,20 +59,12 @@ export function MagneticButton({
       const factor = 1 - distance / radius;
       x.set(distanceX * strength * factor);
       y.set(distanceY * strength * factor);
-
-      // Update glow position (percentage based)
-      const glowPosX = ((e.clientX - rect.left) / rect.width) * 100;
-      const glowPosY = ((e.clientY - rect.top) / rect.height) * 100;
-      glowX.set(glowPosX);
-      glowY.set(glowPosY);
     }
   };
 
   const handleMouseLeave = () => {
     x.set(0);
     y.set(0);
-    glowX.set(50);
-    glowY.set(50);
     setIsHovered(false);
   };
 
@@ -85,13 +73,6 @@ export function MagneticButton({
       setIsHovered(true);
     }
   };
-
-  // Dynamic glow gradient based on cursor position
-  const glowBackground = useTransform(
-    [glowX, glowY],
-    ([latestX, latestY]) =>
-      `radial-gradient(circle at ${latestX}% ${latestY}%, rgba(6, 182, 212, 0.3) 0%, transparent 60%)`
-  );
 
   const Component = as === "a" ? motion.a : as === "div" ? motion.div : motion.button;
 
@@ -113,28 +94,16 @@ export function MagneticButton({
         y: springY,
       }}
     >
-      {/* Glow effect layer */}
-      {glow && (
+      {/* Outer glow - only visible on hover */}
+      {glow && isHovered && (
         <motion.div
-          className="absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background: glowBackground,
-            opacity: isHovered ? 1 : 0,
-          }}
-        />
-      )}
-
-      {/* Outer glow */}
-      {glow && (
-        <motion.div
-          className="absolute -inset-1 rounded-[inherit] blur-xl pointer-events-none"
-          animate={{
-            opacity: isHovered ? 0.4 : 0,
-            scale: isHovered ? 1.1 : 1,
-          }}
+          className="absolute -inset-1 rounded-xl blur-xl pointer-events-none"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 0.5, scale: 1.05 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           style={{
-            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(59, 130, 246, 0.5))",
+            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(59, 130, 246, 0.4))",
           }}
         />
       )}
