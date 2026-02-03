@@ -72,12 +72,10 @@ function TiltCard({
   children,
   className,
   glowColor,
-  popular: _popular,
 }: {
   children: React.ReactNode;
   className?: string;
   glowColor: string;
-  popular: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -203,7 +201,6 @@ function PricingCard({
     <SectionReveal delay={0.1 + index * 0.15} direction="up" effect="blur-scale">
       <TiltCard
         glowColor={tier.glowColor}
-        popular={tier.popular}
         className="h-full"
       >
         <div
