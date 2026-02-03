@@ -209,7 +209,7 @@ export function Contact() {
               transition={{ duration: 0.4, ease: easings.easeOutBack }}
             >
               <Calendar size={12} />
-              Let's Talk Growth
+              {"Let's Talk Growth"}
             </motion.div>
 
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -236,7 +236,7 @@ export function Contact() {
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
               We only work with brands that are serious about growth. See if
-              we're the right fit.
+              we&apos;re the right fit.
             </p>
           </div>
         </SectionReveal>

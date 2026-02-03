@@ -6,17 +6,11 @@ import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { FloatingOrbs } from "@/components/FloatingOrbs";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { MagneticButton } from "@/components/MagneticButton";
-import {
-  SectionReveal,
-  StaggerReveal,
-  StaggerItem,
-  TextReveal,
-} from "@/components/SectionReveal";
+import { SectionReveal } from "@/components/SectionReveal";
 import {
   staggerContainer,
   staggerItem,
   easings,
-  fadeInUp,
 } from "@/lib/animations";
 
 const stats = [

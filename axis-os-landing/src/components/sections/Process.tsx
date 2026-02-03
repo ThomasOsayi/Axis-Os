@@ -3,12 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Target, Palette, Megaphone, Bot, TrendingUp, Pause, Play } from "lucide-react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Progress } from "@/components/ui/progress";
-import {
-  SectionReveal,
-  StaggerReveal,
-  StaggerItem,
-} from "@/components/SectionReveal";
+import { SectionReveal } from "@/components/SectionReveal";
 import { easings } from "@/lib/animations";
 
 // Auto-play configuration

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { SectionReveal, StaggerReveal, StaggerItem } from "@/components/SectionReveal";
+import { SectionReveal } from "@/components/SectionReveal";
 import { Check, Star, Sparkles } from "lucide-react";
 import { easings } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -72,7 +72,7 @@ function TiltCard({
   children,
   className,
   glowColor,
-  popular,
+  popular: _popular,
 }: {
   children: React.ReactNode;
   className?: string;
