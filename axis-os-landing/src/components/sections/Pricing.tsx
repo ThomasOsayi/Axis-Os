@@ -380,7 +380,7 @@ export function Pricing() {
             viewport={{ once: true }}
           >
             All plans include a 2-week onboarding period.{" "}
-            <a href="#contact" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <a href="https://calendly.com/mgonzagacu/30min" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 transition-colors">
               Book a call
             </a>{" "}
             to discuss custom requirements.

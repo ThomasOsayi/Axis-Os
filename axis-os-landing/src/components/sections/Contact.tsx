@@ -268,7 +268,7 @@ export function Contact() {
           >
             <MagneticButton
               as="a"
-              href="https://calendly.com" // Replace with actual link
+              href="https://calendly.com/mgonzagacu/30min"
               strength={0.15}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-lg font-semibold px-10 py-5 rounded-xl"
             >

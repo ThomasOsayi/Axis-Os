@@ -15,7 +15,7 @@ import {
 
 const stats = [
   { value: 46.4, suffix: "x", label: "ROAS", decimals: 1 },
-  { value: 87, prefix: "$", suffix: "k+", label: "Profit", decimals: 0 },
+  { value: 87, prefix: "$", suffix: "k+", label: "Revenue", decimals: 0 },
   { value: 35, suffix: "k+", label: "Reached", decimals: 0 },
 ];
 

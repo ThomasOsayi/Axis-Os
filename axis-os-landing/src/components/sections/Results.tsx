@@ -13,12 +13,12 @@ const caseStudies = [
     name: "Caddie Splash",
     category: "Golf E-commerce",
     metrics: [
-      { label: "Profit", value: "$62k", icon: DollarSign },
+      { label: "Revenue", value: "$62k", icon: DollarSign },
       { label: "IG Growth", value: "10%", icon: TrendingUp },
       { label: "ROAS", value: "46.4x", icon: Target },
     ],
     description:
-      "Scaled a golf e-commerce brand from scratch to $62k in profit through strategic Meta Ads and organic Instagram growth.",
+      "Scaled a golf e-commerce brand from scratch to $62k in revenue through strategic Meta Ads and organic Instagram growth.",
     gradient: "from-cyan-500/20 to-blue-600/20",
     border: "border-cyan-500/20",
     hoverBorder: "group-hover:border-cyan-500/40",
@@ -29,7 +29,7 @@ const caseStudies = [
     name: "CMC Design Co",
     category: "Golf Accessories",
     metrics: [
-      { label: "Profit", value: "$25k", icon: DollarSign },
+      { label: "Revenue", value: "$25k", icon: DollarSign },
       { label: "IG Growth", value: "5-10%", icon: TrendingUp },
       { label: "Reached", value: "20k+", icon: Users },
     ],

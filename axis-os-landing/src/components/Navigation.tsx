@@ -70,7 +70,7 @@ export function Navigation() {
               asChild
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white border-0 transition-transform hover:scale-105"
             >
-              <a href="#contact">Book a Call</a>
+              <a href="https://calendly.com/mgonzagacu/30min" target="_blank" rel="noopener noreferrer">Book a Call</a>
             </Button>
           </div>
 
@@ -106,7 +106,7 @@ export function Navigation() {
               asChild
               className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 w-full"
             >
-              <a href="#contact" onClick={() => setMobileOpen(false)}>
+              <a href="https://calendly.com/mgonzagacu/30min" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}>
                 Book a Call
               </a>
             </Button>
