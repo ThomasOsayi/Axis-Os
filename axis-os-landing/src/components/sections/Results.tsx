@@ -161,15 +161,12 @@ function CaseStudyCard({
   study: (typeof caseStudies)[0];
   index: number;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <SectionReveal delay={0.15 + index * 0.1} direction="up" effect="blur-scale">
       <TiltCard glowColor={study.glowColor} className="h-full">
         <div
-          ref={ref}
           className={`relative bg-gradient-to-br ${study.gradient} border ${study.border} ${study.hoverBorder} rounded-2xl h-full overflow-hidden transition-colors duration-300`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
