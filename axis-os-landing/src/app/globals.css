@@ -50,63 +50,126 @@
 
 /* ============================================
    FLOATING ORB ANIMATIONS
+   Now using translate3d to force GPU compositing.
+   Scale removed — the orbs already look soft via
+   radial-gradient, so scale changes added visual
+   noise without benefit.
    ============================================ */
 @keyframes float-1 {
   0%, 100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
   25% {
-    transform: translate(100px, -50px) scale(1.1);
+    transform: translate3d(100px, -50px, 0);
   }
   50% {
-    transform: translate(-50px, 100px) scale(0.9);
+    transform: translate3d(-50px, 100px, 0);
   }
   75% {
-    transform: translate(50px, 50px) scale(1.05);
+    transform: translate3d(50px, 50px, 0);
   }
 }
 
 @keyframes float-2 {
   0%, 100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
   25% {
-    transform: translate(-80px, 60px) scale(1.15);
+    transform: translate3d(-80px, 60px, 0);
   }
   50% {
-    transform: translate(60px, -80px) scale(0.85);
+    transform: translate3d(60px, -80px, 0);
   }
   75% {
-    transform: translate(-40px, -40px) scale(1.1);
+    transform: translate3d(-40px, -40px, 0);
   }
 }
 
 @keyframes float-3 {
   0%, 100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
   33% {
-    transform: translate(70px, 70px) scale(1.2);
+    transform: translate3d(70px, 70px, 0);
   }
   66% {
-    transform: translate(-60px, -30px) scale(0.9);
+    transform: translate3d(-60px, -30px, 0);
   }
 }
 
 .animate-float-1 {
   animation: float-1 20s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-2 {
   animation: float-2 25s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-3 {
   animation: float-3 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ============================================
+   Hero background glow — pure CSS replaces Framer Motion
+   animate loop that ran JS interpolation every frame
+   ============================================ */
+@keyframes hero-glow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.animate-hero-glow {
+  animation: hero-glow 8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ============================================
+   Results section background glows — replaces two Framer Motion
+   infinite animate loops that each ran JS every frame
+   ============================================ */
+@keyframes results-glow-1 {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+}
+
+@keyframes results-glow-2 {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.5;
+  }
+}
+
+.animate-results-glow-1 {
+  animation: results-glow-1 8s ease-in-out infinite;
+}
+
+.animate-results-glow-2 {
+  animation: results-glow-2 10s ease-in-out 1s infinite;
 }
 
 /* ============================================
    PAGE LOAD ANIMATIONS
+   Replaced filter: blur() with opacity-only.
+   transform animations use translate3d for GPU.
    ============================================ */
 @keyframes fade-in {
   from {
@@ -120,44 +183,44 @@
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translate3d(0, 30px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-down {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translate3d(0, -30px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-left {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translate3d(30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-right {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translate3d(-30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -172,14 +235,14 @@
   }
 }
 
+/* blur-in now just fades in — the blur effect was barely
+   perceptible at 10px but cost a full repaint per frame */
 @keyframes blur-in {
   from {
     opacity: 0;
-    filter: blur(10px);
   }
   to {
     opacity: 1;
-    filter: blur(0);
   }
 }
 
@@ -278,6 +341,7 @@
 
 /* ============================================
    TEXT REVEAL ANIMATIONS
+   Removed filter: blur from text-blur-reveal
    ============================================ */
 @keyframes text-reveal {
   from {
@@ -291,13 +355,11 @@
 @keyframes text-blur-reveal {
   0% {
     opacity: 0;
-    filter: blur(10px);
-    transform: translateY(10px);
+    transform: translate3d(0, 10px, 0);
   }
   100% {
     opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -436,15 +498,16 @@
 
 /* ============================================
    SCROLL-TRIGGERED ANIMATIONS
+   Using translate3d for GPU compositing
    ============================================ */
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(60px);
+    transform: translate3d(0, 60px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -643,11 +706,11 @@
 @keyframes menu-slide-down {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translate3d(0, -10px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -683,6 +746,15 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(51 65 85);
+}
+
+/* ============================================
+   SECTION CONTAINMENT
+   Limits repaint scope so animations in one
+   section don't trigger layout/paint in others
+   ============================================ */
+section {
+  contain: layout style paint;
 }
 
 /* ============================================

@@ -30,22 +30,14 @@ export function Hero() {
     >
       <FloatingOrbs />
 
-      {/* Gradient mesh background */}
+      {/* Gradient mesh background — now pure CSS animation instead of
+          Framer Motion's animate loop which ran JS every frame */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full"
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full animate-hero-glow will-change-[transform,opacity]"
           style={{
             background:
               "radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%)",
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.8, 0.5],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
           }}
         />
       </div>
@@ -57,15 +49,10 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-800 bg-slate-900/50 text-sm text-slate-400 mb-8 hover:border-cyan-500/50 hover:bg-slate-800/50 transition-all cursor-default"
             whileHover={{ scale: 1.02 }}
           >
-            <motion.span
-              className="relative flex h-2 w-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
+            <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
-            </motion.span>
+            </span>
             <span>Growth Systems for Ambitious Brands</span>
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
           </motion.div>
@@ -80,16 +67,10 @@ export function Hero() {
           </SectionReveal>
 
           <SectionReveal delay={0.35} effect="blur" direction="up" distance={60}>
-            <motion.span
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight gradient-text inline-block"
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "linear",
-              }}
+            {/* Gradient text now uses CSS animation instead of Framer Motion's
+                animate prop which ran JS interpolation every frame */}
+            <span
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight inline-block bg-clip-text text-transparent animate-gradient will-change-[background-position]"
               style={{
                 backgroundSize: "200% auto",
                 backgroundImage:
@@ -97,7 +78,7 @@ export function Hero() {
               }}
             >
               Predictable Revenue
-            </motion.span>
+            </span>
           </SectionReveal>
         </div>
 
@@ -148,7 +129,7 @@ export function Hero() {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
           >
-            {/* Stats background glow */}
+            {/* Stats background glow — static, no animation needed */}
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5 rounded-2xl blur-xl" />
 
             <div className="relative grid grid-cols-3 gap-8 p-6 rounded-2xl border border-slate-800/50 bg-slate-900/30 backdrop-blur-sm">

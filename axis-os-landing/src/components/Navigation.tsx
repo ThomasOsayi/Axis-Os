@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
@@ -16,34 +16,52 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const activeSectionRef = useRef("");
 
+  // Lightweight scroll listener — only tracks scrolled state (boolean flip)
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
-
-      const sections = navLinks.map((l) => l.href.slice(1));
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 120) {
-            setActiveSection(sections[i]);
-            return;
-          }
-        }
-      }
-      setActiveSection("");
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // IntersectionObserver for active section — no per-frame getBoundingClientRect
+  useEffect(() => {
+    const sectionIds = navLinks.map((l) => l.href.slice(1));
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            activeSectionRef.current = id;
+            setActiveSection(id);
+          }
+        },
+        {
+          rootMargin: "-20% 0px -60% 0px",
+          threshold: 0,
+        }
+      );
+
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((obs) => obs.disconnect());
+  }, []);
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 will-change-[background-color,border-color] ${
         scrolled
-          ? "bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50"
+          ? "bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50"
           : "bg-transparent"
       }`}
     >
@@ -86,7 +104,7 @@ export function Navigation() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/50">
+        <div className="md:hidden bg-slate-950/95 backdrop-blur-md border-b border-slate-800/50">
           <div className="px-4 py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
               <a

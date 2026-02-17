@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform, useInView } from "framer-motion";
+import { useRef, useState, useCallback } from "react";
+import { motion, useInView } from "framer-motion";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SectionReveal } from "@/components/SectionReveal";
 import { DollarSign, TrendingUp, Users, Target, ArrowUpRight } from "lucide-react";
@@ -59,7 +59,9 @@ const caseStudies = [
   },
 ];
 
-// Tilt card component
+// Simplified TiltCard — uses CSS transforms + transitions instead of
+// Framer Motion's useMotionValue/useSpring/useTransform chain which
+// ran reactive updates on every mousemove pixel
 function TiltCard({
   children,
   className,
@@ -70,133 +72,88 @@ function TiltCard({
   glowColor: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg)");
   const [isHovered, setIsHovered] = useState(false);
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const springConfig = { stiffness: 300, damping: 30 };
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [10, -10]), springConfig);
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-10, 10]), springConfig);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!ref.current) return;
-
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
+    const rotateX = ((e.clientY - centerY) / rect.height) * -10;
+    const rotateY = ((e.clientX - centerX) / rect.width) * 10;
+    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
+  }, []);
 
-    x.set((e.clientX - centerX) / rect.width);
-    y.set((e.clientY - centerY) / rect.height);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
+  const handleMouseLeave = useCallback(() => {
+    setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg)");
     setIsHovered(false);
-  };
+  }, []);
 
   return (
-    <motion.div
+    <div
       ref={ref}
       className={cn("relative h-full group", className)}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       style={{
-        rotateX,
-        rotateY,
+        transform,
         transformStyle: "preserve-3d",
-        perspective: 1000,
+        transition: "transform 0.15s ease-out",
+        willChange: "transform",
       }}
     >
-      {/* Glow effect */}
-      <motion.div
-        className="absolute -inset-2 rounded-3xl blur-xl pointer-events-none"
-        style={{ background: glowColor }}
-        animate={{
+      {/* Glow effect — CSS transition instead of Framer Motion animate */}
+      <div
+        className="absolute -inset-2 rounded-3xl pointer-events-none transition-opacity duration-300"
+        style={{
+          background: glowColor,
+          filter: "blur(16px)",
           opacity: isHovered ? 1 : 0,
-          scale: isHovered ? 1.05 : 1,
         }}
-        transition={{ duration: 0.3 }}
       />
 
-      {/* Card lift */}
-      <motion.div
-        className="relative h-full"
-        animate={{
-          y: isHovered ? -8 : 0,
-        }}
-        transition={{ duration: 0.3, ease: easings.easeOutExpo }}
+      {/* Card lift — CSS transition */}
+      <div
+        className="relative h-full transition-transform duration-300 ease-out"
+        style={{ transform: isHovered ? "translateY(-8px)" : "translateY(0)" }}
       >
         {children}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
-// Metric item with animation
+// Metric item — simplified, no individual motion wrappers
 function MetricItem({
   metric,
-  index,
   accentColor,
-  isInView,
 }: {
   metric: { label: string; value: string; icon: React.ElementType };
-  index: number;
   accentColor: string;
-  isInView: boolean;
 }) {
   const Icon = metric.icon;
 
   return (
-    <motion.div
-      className="text-center bg-slate-950/50 rounded-lg p-3 relative overflow-hidden group/metric"
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.1,
-        ease: easings.easeOutBack,
-      }}
-      whileHover={{ scale: 1.05 }}
-    >
-      {/* Hover shine */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/metric:translate-x-full transition-transform duration-700"
-      />
+    <div className="text-center bg-slate-950/50 rounded-lg p-3 relative overflow-hidden group/metric hover:scale-105 transition-transform duration-200">
+      {/* Hover shine — CSS only */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/metric:translate-x-full transition-transform duration-700" />
 
-      <motion.div
-        className={`mx-auto mb-1 ${accentColor} opacity-50`}
-        initial={{ scale: 0 }}
-        animate={isInView ? { scale: 1 } : { scale: 0 }}
-        transition={{
-          duration: 0.3,
-          delay: index * 0.1 + 0.2,
-          ease: easings.easeOutBack,
-        }}
-      >
+      <div className={`mx-auto mb-1 ${accentColor} opacity-50`}>
         <Icon size={14} />
-      </motion.div>
+      </div>
 
-      <motion.div
-        className="text-lg font-bold text-white"
-        initial={{ opacity: 0, y: 10 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-        transition={{
-          duration: 0.3,
-          delay: index * 0.1 + 0.15,
-        }}
-      >
+      <div className="text-lg font-bold text-white">
         {metric.value}
-      </motion.div>
+      </div>
 
       <div className="text-xs text-slate-500">{metric.label}</div>
-    </motion.div>
+    </div>
   );
 }
 
-// Case study card
+// Case study card — reduced from ~10 motion wrappers to 1 SectionReveal
 function CaseStudyCard({
   study,
   index,
@@ -213,18 +170,17 @@ function CaseStudyCard({
       <TiltCard glowColor={study.glowColor} className="h-full">
         <div
           ref={ref}
-          className={`relative bg-gradient-to-br ${study.gradient} border ${study.border} ${study.hoverBorder} backdrop-blur-sm rounded-2xl h-full overflow-hidden transition-colors duration-300`}
+          className={`relative bg-gradient-to-br ${study.gradient} border ${study.border} ${study.hoverBorder} rounded-2xl h-full overflow-hidden transition-colors duration-300`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-30">
+          {/* Background pattern — static, no animation */}
+          <div className="absolute inset-0 opacity-[0.03]">
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `radial-gradient(circle at 2px 2px, ${study.accentColor.replace("text-", "").replace("-400", "")} 1px, transparent 0)`,
+                backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
                 backgroundSize: "32px 32px",
-                opacity: 0.1,
               }}
             />
           </div>
@@ -233,57 +189,38 @@ function CaseStudyCard({
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <motion.h3
-                  className="text-xl font-bold text-white flex items-center gap-2"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                >
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   {study.name}
-                  <motion.span
-                    className={study.accentColor}
-                    animate={{
-                      x: isHovered ? 4 : 0,
-                      y: isHovered ? -4 : 0,
+                  <span
+                    className={`${study.accentColor} transition-transform duration-200`}
+                    style={{
+                      transform: isHovered ? "translate(4px, -4px)" : "translate(0, 0)",
                     }}
-                    transition={{ duration: 0.2 }}
                   >
                     <ArrowUpRight size={18} />
-                  </motion.span>
-                </motion.h3>
-                <motion.span
-                  className="inline-block text-xs text-slate-400 bg-slate-800/50 px-2 py-1 rounded-full mt-1"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
-                >
+                  </span>
+                </h3>
+                <span className="inline-block text-xs text-slate-400 bg-slate-800/50 px-2 py-1 rounded-full mt-1">
                   {study.category}
-                </motion.span>
+                </span>
               </div>
             </div>
 
-            {/* Metrics */}
+            {/* Metrics — no individual motion wrappers */}
             <div className="grid grid-cols-3 gap-3 mb-4">
-              {study.metrics.map((metric, i) => (
+              {study.metrics.map((metric) => (
                 <MetricItem
                   key={metric.label}
                   metric={metric}
-                  index={i}
                   accentColor={study.accentColor}
-                  isInView={isInView}
                 />
               ))}
             </div>
 
             {/* Description */}
-            <motion.p
-              className="text-sm text-slate-400"
-              initial={{ opacity: 0, y: 10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-            >
+            <p className="text-sm text-slate-400">
               {study.description}
-            </motion.p>
+            </p>
           </div>
         </div>
       </TiltCard>
@@ -291,7 +228,7 @@ function CaseStudyCard({
   );
 }
 
-// Big stat counter component
+// Big stat counter — simplified hover effects
 function BigStatCounter() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -308,37 +245,32 @@ function BigStatCounter() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Glow */}
-      <motion.div
-        className="absolute -inset-1 rounded-2xl blur-xl pointer-events-none"
-        style={{ background: "rgba(34, 211, 238, 0.1)" }}
-        animate={{ opacity: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-      />
-
-      {/* Shimmer */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent"
-        animate={{
-          x: isHovered ? ["0%", "200%"] : "0%",
-        }}
-        transition={{
-          duration: 1,
-          ease: "linear",
-          repeat: isHovered ? Infinity : 0,
+      {/* Glow — CSS transition */}
+      <div
+        className="absolute -inset-1 rounded-2xl pointer-events-none transition-opacity duration-300"
+        style={{
+          background: "rgba(34, 211, 238, 0.1)",
+          filter: "blur(16px)",
+          opacity: isHovered ? 1 : 0,
         }}
       />
 
-      <motion.div
-        className="relative p-3 rounded-xl bg-cyan-500/10"
-        animate={{
-          rotate: isHovered ? [0, -10, 10, 0] : 0,
-          scale: isHovered ? 1.1 : 1,
+      {/* Shimmer — CSS only */}
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent transition-transform duration-700"
+        style={{
+          transform: isHovered ? "translateX(200%)" : "translateX(-100%)",
         }}
-        transition={{ duration: 0.4 }}
+      />
+
+      <div
+        className="relative p-3 rounded-xl bg-cyan-500/10 transition-transform duration-300"
+        style={{
+          transform: isHovered ? "scale(1.1)" : "scale(1)",
+        }}
       >
         <DollarSign className="text-cyan-400" size={32} />
-      </motion.div>
+      </div>
 
       <div className="relative text-left">
         <motion.div
@@ -371,32 +303,21 @@ function BigStatCounter() {
 export function Results() {
   return (
     <section id="results" className="relative py-24 overflow-hidden">
-      {/* Background */}
+      {/* Background — pure CSS animations replace Framer Motion infinite loops */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-transparent" />
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
+        <div
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full will-change-[transform,opacity] animate-results-glow-1"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(34,211,238,0.05) 0%, transparent 70%)",
           }}
         />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
+        <div
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full will-change-[transform,opacity] animate-results-glow-2"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)",
           }}
         />
       </div>
@@ -405,14 +326,9 @@ export function Results() {
         {/* Header */}
         <SectionReveal>
           <div className="text-center mb-16">
-            <motion.p
-              className="text-sm font-medium text-cyan-400 tracking-wider uppercase mb-3"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
+            <p className="text-sm font-medium text-cyan-400 tracking-wider uppercase mb-3">
               Proven Results
-            </motion.p>
+            </p>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">
               Real Numbers,{" "}
               <span className="gradient-text">Real Growth</span>

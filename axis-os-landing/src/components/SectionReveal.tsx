@@ -36,7 +36,6 @@ export function SectionReveal({
   const ref = useRef(null);
   const isInView = useInView(ref, { once, margin });
 
-  // Build initial state based on direction
   const getDirectionOffset = () => {
     switch (direction) {
       case "up":
@@ -53,13 +52,15 @@ export function SectionReveal({
     }
   };
 
-  // Build effect properties
+  // GPU-friendly replacements for blur effects
+  // Instead of animating filter: blur() (triggers repaint every frame),
+  // we use opacity + scale which run on the compositor thread
   const getEffectProps = () => {
     switch (effect) {
       case "blur":
         return {
-          hidden: { filter: "blur(10px)" },
-          visible: { filter: "blur(0px)" },
+          hidden: { opacity: 0 },
+          visible: { opacity: 1 },
         };
       case "scale":
         return {
@@ -68,8 +69,8 @@ export function SectionReveal({
         };
       case "blur-scale":
         return {
-          hidden: { filter: "blur(10px)", scale: 0.95 },
-          visible: { filter: "blur(0px)", scale: 1 },
+          hidden: { scale: 0.97, opacity: 0 },
+          visible: { scale: 1, opacity: 1 },
         };
       case "fade":
       default:
@@ -111,6 +112,7 @@ export function SectionReveal({
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       className={className}
+      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </Component>
@@ -173,7 +175,7 @@ export function StaggerReveal({
 }
 
 // ============================================
-// STAGGER ITEM (use inside StaggerReveal)
+// STAGGER ITEM
 // ============================================
 interface StaggerItemProps {
   children: React.ReactNode;
@@ -210,12 +212,13 @@ export function StaggerItem({
     }
   };
 
+  // Same GPU-friendly approach — no filter: blur()
   const getEffectProps = () => {
     switch (effect) {
       case "blur":
         return {
-          hidden: { filter: "blur(8px)" },
-          visible: { filter: "blur(0px)" },
+          hidden: { opacity: 0 },
+          visible: { opacity: 1 },
         };
       case "scale":
         return {
@@ -224,8 +227,8 @@ export function StaggerItem({
         };
       case "blur-scale":
         return {
-          hidden: { filter: "blur(8px)", scale: 0.95 },
-          visible: { filter: "blur(0px)", scale: 1 },
+          hidden: { scale: 0.97, opacity: 0 },
+          visible: { scale: 1, opacity: 1 },
         };
       default:
         return { hidden: {}, visible: {} };
@@ -263,7 +266,7 @@ export function StaggerItem({
 }
 
 // ============================================
-// TEXT REVEAL (word by word or character)
+// TEXT REVEAL
 // ============================================
 interface TextRevealProps {
   text: string;
@@ -303,16 +306,15 @@ export function TextReveal({
     },
   };
 
+  // Replaced filter: blur(8px) with simple opacity + translateY
   const itemVariants: Variants = {
     hidden: {
       opacity: 0,
       y: 20,
-      filter: "blur(8px)",
     },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: {
         duration: 0.4,
         ease: easings.easeOutExpo,
@@ -347,7 +349,7 @@ export function TextReveal({
 }
 
 // ============================================
-// PARALLAX REVEAL (subtle parallax on scroll)
+// PARALLAX REVEAL
 // ============================================
 interface ParallaxRevealProps {
   children: React.ReactNode;
@@ -381,6 +383,7 @@ export function ParallaxReveal({
         ease: easings.easeOutExpo,
       }}
       className={className}
+      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </motion.div>
@@ -431,7 +434,7 @@ export function HoverReveal({
 }
 
 // ============================================
-// COUNTER REVEAL (animated number with reveal)
+// COUNTER REVEAL
 // ============================================
 interface CounterRevealProps {
   end: number;
